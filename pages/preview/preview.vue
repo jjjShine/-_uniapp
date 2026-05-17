@@ -99,6 +99,9 @@
 						<view class="copyright">
 							声明：本图片来用户投稿，非商业使用，用于免费学习交流，如侵犯了您的权益，您可以拷贝壁纸ID举报至平台，邮箱513894357@qq.com，管理将删除侵权壁纸，维护您的权益。
 						</view>
+						<view class="safe-area-inset-bottom">
+							
+						</view>
 					</view>
 				</scroll-view>
 			</view>
@@ -140,6 +143,7 @@
 		apiWriteDownload,
 		apiDetailWall
 	} from "@/api/apis.js"
+	import {gotoHome} from "@/utils/common.js"
 	const classListStore = classStore()
 	const storgclassList = classListStore.classList
 	const classList = ref([]);
@@ -156,6 +160,8 @@
 	})
 	onLoad(async (e) => {
 		currentId.value = e.id
+		if(!currentId.value)
+		gotoHome()
 		if(e.type =='share'){
 			let res = await apiDetailWall({
 				id:currentId.value 
@@ -170,7 +176,6 @@
 		currentIndex.value = classList.value.findIndex(item => item._id === currentId.value)
 		currentInfo.value = classList.value[currentIndex.value]
 		readImgsFun()
-		console.log(classList.value);
 	})
 	const swiperChange = (e) => {
 		currentIndex.value = e.detail.current
@@ -239,7 +244,18 @@
 	}
 	//点击返回上一页
 	const goBack = () => {
-		uni.navigateBack()
+		uni.navigateBack(
+		{
+			success:()=>{
+				
+			},
+			fail:()=>{
+				uni.reLaunch({
+					url:"/pages/index/index"
+				})
+			}
+		}
+		)
 	}
 	//点击下载
 	const clickDownload = async () => {

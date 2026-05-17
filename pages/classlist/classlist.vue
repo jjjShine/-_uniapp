@@ -18,9 +18,10 @@
 </template>
 <script setup>
 import { ref } from 'vue';
-import {onLoad,onReachBottom,onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
-import {apiGetClassList} from "@/api/apis.js"
+import {onLoad,onUnload,onReachBottom,onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
+import {apiGetClassList,apiHistoryList} from "@/api/apis.js"
 import classStore from "@/stores/classList.js"
+import {gotoHome} from "@/utils/common.js"
 const classListStore = classStore()
 const classList = ref([])
 const noData = ref(false)
@@ -31,16 +32,25 @@ const queryParams = {
 }
 //获取分类列表网络数据
 const getClassList = async()=>{
-	let res = await apiGetClassList(queryParams)
+	let res 
+	if(queryParams.classid)
+	 res = await apiGetClassList(queryParams)
+	if(queryParams.type)
+	res = await apiHistoryList(queryParams)
 	if(res.data.length<queryParams.pageSize)
 	noData.value = true
 	classList.value =[...classList.value,...res.data]
 	classListStore.storeClass(classList.value)
 }
 onLoad((e)=>{
-	let {id=null,name=null} = e;
-	pageName = name
+	let {id=null,name=null,type=null} = e;
+	if(type)
+	queryParams.type = type
+	if(id)
 	queryParams.classid = id
+	// if(!id)
+	// gotoHome()
+	pageName = name
 	//修改导航标题
 	uni.setNavigationBarTitle({
 		title:name
@@ -68,6 +78,9 @@ onShareTimeline(()=>{
 		title:"jShine壁纸,分类页面",
 		query:"id="+queryParams.classid+"&name="+pageName
 	}
+})
+onUnload(()=>{
+	classListStore.removeStore()
 })
 </script>
 <style lang="scss" scoped>

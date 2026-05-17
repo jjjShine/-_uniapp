@@ -5,8 +5,12 @@ export default defineStore('classStore',()=>{
 	function storeClass(list){
 		classList.value= list
 	}
+	function removeStore(){
+		classList.value=[]
+	}
 	return {
 		classList,
-		storeClass
+		storeClass,
+		removeStore
 	}
 })

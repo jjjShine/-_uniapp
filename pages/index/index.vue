@@ -4,7 +4,12 @@
 		<view class="banner">
 			<swiper indicator-dots indicator-color="rgb(255,255,255,0.5)" indicator-active-color="#fff" autoplay circular >
 				<swiper-item v-for = "item in bannerList" :key="item._id">
-					<image :src="item.picurl" mode="aspectFill"></image>
+					<navigator v-if="item.target=='miniProgram'" :url="item.url" target="miniProgram" :app-id="item.appid" class="like">
+						<image :src="item.picurl" mode="aspectFill"></image>
+					</navigator>
+					<navigator v-else :url="`/pages/classlist/classlist?${item.url}`" class="like">
+						<image :src="item.picurl" mode="aspectFill"></image>
+					</navigator>
 				</swiper-item>
 			</swiper>
 		</view>
@@ -16,7 +21,7 @@
 			<view class="center">
 				<swiper vertical autoplay circular interval="1500" duration="300">
 						<swiper-item v-for="item in noticeList" :key="item._id">
-							<navigator url="/pages/notice/detail">
+							<navigator :url="`/pages/notice/detail?id=${item._id}&name=公告详情`">
 								{{item.title}}
 							</navigator>
 							</swiper-item>
@@ -43,7 +48,7 @@
 			</common-title>
 			<view class="content">
 				<scroll-view scroll-x="true" >
-					<view class="box" v-for="item in randomWallList" :key="item._id" @click="goPreview">			
+					<view class="box" v-for="item in randomWallList" :key="item._id" @click="goPreview(item._id)">			
 							<image :src="item.smallPicurl" mode="aspectFill"></image>
 					</view>
 				</scroll-view>
@@ -55,7 +60,7 @@
 					专题精选
 				</template>
 				<template #custom>
-				<navigator url="" class="more">More+</navigator>
+				<navigator url="/pages/classify/classify" open-type="reLaunch" class="more">More+</navigator>
 				</template>
 			</common-title>
 			<view class="content">
@@ -70,6 +75,8 @@
 import { ref } from 'vue';
 import {onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
 import {apiGetBanner,apiGetRandomWall,apiGetNotice,apiClassify} from "@/api/apis.js"
+import classStore from "@/stores/classList.js"
+const classListStore = classStore()
 const bannerList = ref([])
 const randomWallList = ref([])
 const noticeList = ref([]) 
@@ -90,9 +97,10 @@ const getClassify = async()=>{
 	let res = await apiClassify({select:true})
 	classifyList.value = res.data
 }
-const goPreview = ()=>{
+const goPreview = (id)=>{
+	classListStore.storeClass(randomWallList.value)
 		uni.navigateTo({
-			url:"/pages/preview/preview"
+			url:"/pages/preview/preview?id="+id
 		})
 	}
 getBanner()
@@ -125,10 +133,14 @@ onShareTimeline(()=>{
 				height: 340rpx;
 				&-item{
 					padding: 0 30rpx;
-					image{
-						height: 100%;
+					.like{
 						width: 100%;
-						border-radius: 10rpx;
+						height: 100%;
+						image{
+							height: 100%;
+							width: 100%;
+							border-radius: 10rpx;
+						}
 					}
 				}
 			}

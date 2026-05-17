@@ -2,30 +2,44 @@
   <view class="noticelayout">
   	<view class="noticeLayout">
   			<view class="title">
-  				<view class="tag">
+  				<view class="tag" v-if ="detail.select">
   					<uni-tag inverted text="置顶" type="error" />
   				</view>
-  				<view class="font">标题</view>			
+  				<view class="font">{{detail.title}}</view>			
   			</view>
   			<view class="info">
-  				<view class="item">jjk</view>					
+  				<view class="item">{{detail.author}}</view>					
   				<view class="item">
-  					<uni-dateformat :date="Date.now()" format="yyyy-MM-dd hh:mm:ss"></uni-dateformat>
+  					<uni-dateformat :date="detail.publish_date" format="yyyy-MM-dd hh:mm:ss"></uni-dateformat>
   				</view>	
   			</view>
-  			
-  			
   			<view class="content">	
-				内容区域
+				<mp-html :content="detail.content" />
   			</view>
   			<view class="count">
-  				阅读 
+  				阅读 {{detail.view_count}}
   			</view>
   		</view>
   </view>
 </template>
 <script setup>
-
+import {apiNoticeDetail} from "@/api/apis.js"
+import { ref } from "vue"
+import {onLoad} from "@dcloudio/uni-app"
+const detail = ref({})
+let noticeId
+onLoad((e)=>{
+	noticeId = e.id
+	getNoticeDetail()
+	uni.setNavigationBarTitle({
+		title:e.name
+	})
+})
+const getNoticeDetail = ()=>{
+	apiNoticeDetail({id:noticeId}).then(res=>{
+		detail.value = res.data
+	})
+}
 </script>
 <style lang="scss" scoped>
   .noticeLayout{
