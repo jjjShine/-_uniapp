@@ -8,6 +8,7 @@
 </template>
 <script setup>
 import {apiClassify} from "@/api/apis.js"
+import {onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
 import { ref } from 'vue'
 const classifyList = ref([])
 const getClassify = async()=>{
@@ -15,6 +16,20 @@ const getClassify = async()=>{
 	classifyList.value = res.data
 }
 getClassify()
+//分享给好友
+onShareAppMessage((e)=>{
+	return{
+		title:"jShine壁纸,分类页面",
+		path:"/pages/classify/classify"
+		
+	}
+})
+//分享朋友圈
+onShareTimeline(()=>{
+	return{
+		title:"jShine壁纸,分类页面",
+	}
+})
 </script>
 <style lang="scss" scoped>
   .classlayout{

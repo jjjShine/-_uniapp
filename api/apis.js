@@ -21,3 +21,6 @@ export function apiGetSetupScore(data={}){
 export function apiWriteDownload(data={}){
 	return request({url:"downloadWall",data})
 }
+export function apiDetailWall(data={}){
+	return request({url:"detailWall",data})
+}

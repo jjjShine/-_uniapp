@@ -130,16 +130,15 @@
 	import {
 		ref
 	} from 'vue';
-	import {
-		onLoad
-	} from '@dcloudio/uni-app'
+	import {onLoad,onShareAppMessage,onShareTimeline} from '@dcloudio/uni-app'
 	import {
 		getStatusBarHeight
 	} from "@/utils/system.js"
 	import classStore from "@/stores/classList.js"
 	import {
 		apiGetSetupScore,
-		apiWriteDownload
+		apiWriteDownload,
+		apiDetailWall
 	} from "@/api/apis.js"
 	const classListStore = classStore()
 	const storgclassList = classListStore.classList
@@ -155,8 +154,19 @@
 			picurl: item.smallPicurl.replace("_small.webp", ".jpg")
 		}
 	})
-	onLoad((e) => {
+	onLoad(async (e) => {
 		currentId.value = e.id
+		if(e.type =='share'){
+			let res = await apiDetailWall({
+				id:currentId.value 
+			})
+			classList.value = res.data.map(item=>{
+				return{
+					...item,
+					picurl:item.smallPicurl.replace("_small.webp", ".jpg")
+				}
+			})
+		}
 		currentIndex.value = classList.value.findIndex(item => item._id === currentId.value)
 		currentInfo.value = classList.value[currentIndex.value]
 		readImgsFun()
@@ -311,6 +321,21 @@
 		}
 		//#endif
 	}
+
+	//分享给好友
+	onShareAppMessage((e)=>{
+		return {
+			title:"jShine壁纸",
+			path:"/pages/preview/preview?id="+currentId.value+"&type=share"
+		}
+	})
+	//分享朋友圈
+	onShareTimeline(()=>{
+		return{
+			title:"jShine壁纸,分类页面",
+			query:"id="+currentId.value+"&type=share"
+		}
+	})
 </script>
 <style lang="scss" scoped>
 	.preview {

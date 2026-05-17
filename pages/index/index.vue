@@ -68,6 +68,7 @@
 </template>
 <script setup>
 import { ref } from 'vue';
+import {onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
 import {apiGetBanner,apiGetRandomWall,apiGetNotice,apiClassify} from "@/api/apis.js"
 const bannerList = ref([])
 const randomWallList = ref([])
@@ -98,6 +99,21 @@ getBanner()
 getRandomWall()
 getNotice()
 getClassify()
+//分享给好友
+onShareAppMessage((e)=>{
+	return{
+		title:"jShine壁纸,推荐页面",
+		path:"/pages/index/index"
+		
+	}
+})
+//分享朋友圈
+onShareTimeline(()=>{
+	return{
+		title:"jShine壁纸,推荐页面",
+		imageUrl:"/static/images/logo2.png"
+	}
+})
 </script>
 <style lang="scss" scoped>
 	.home{

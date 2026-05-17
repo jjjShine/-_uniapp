@@ -18,12 +18,13 @@
 </template>
 <script setup>
 import { ref } from 'vue';
-import {onLoad,onReachBottom} from "@dcloudio/uni-app"
+import {onLoad,onReachBottom,onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
 import {apiGetClassList} from "@/api/apis.js"
 import classStore from "@/stores/classList.js"
 const classListStore = classStore()
 const classList = ref([])
 const noData = ref(false)
+let pageName
 const queryParams = {
 	pageNum:1,
 	pageSize:12
@@ -38,6 +39,7 @@ const getClassList = async()=>{
 }
 onLoad((e)=>{
 	let {id=null,name=null} = e;
+	pageName = name
 	queryParams.classid = id
 	//修改导航标题
 	uni.setNavigationBarTitle({
@@ -51,6 +53,21 @@ onReachBottom(()=>{
 	return 
 	queryParams.pageNum++
 	getClassList()
+})
+//分享给好友
+onShareAppMessage((e)=>{
+	return{
+		title:"jShine壁纸-"+pageName,
+		path:"/pages/classlist/classlist?id="+queryParams.classid+"&name="+pageName
+		
+	}
+})
+//分享朋友圈
+onShareTimeline(()=>{
+	return{
+		title:"jShine壁纸,分类页面",
+		query:"id="+queryParams.classid+"&name="+pageName
+	}
 })
 </script>
 <style lang="scss" scoped>
